@@ -20,7 +20,7 @@ class Curl {
     public static function setTimeout($timeout)
     {
         curl_setopt (self::$ch, CURLOPT_TIMEOUT, $timeout);
-		curl_setopt (self::$ch, CURLOPT_CONNECTTIMEOUT,$timeout);
+	curl_setopt (self::$ch, CURLOPT_CONNECTTIMEOUT,$timeout);
     }
     public static function Cookies($file_path)
     {
@@ -37,7 +37,7 @@ class Curl {
     {
         curl_setopt (self::$ch, CURLOPT_URL, self::$URL);
         curl_setopt(self::$ch, CURLOPT_POST, 1);	
-		curl_setopt(self::$ch, CURLOPT_POSTFIELDS, $data);
+	curl_setopt(self::$ch, CURLOPT_POSTFIELDS, $data);
     }
     public static function Get()
     {
